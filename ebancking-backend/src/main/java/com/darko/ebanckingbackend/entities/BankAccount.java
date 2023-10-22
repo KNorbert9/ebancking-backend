@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data @AllArgsConstructor @NoArgsConstructor @Entity @DiscriminatorColumn(name = "TYPE", length = 4)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class BankAccount {
 
     @Id
@@ -19,6 +20,7 @@ public class BankAccount {
 
     private Date CreatedAt;
 
+    @Enumerated(EnumType.STRING)
     private AccountStatus status;
 
     @ManyToOne

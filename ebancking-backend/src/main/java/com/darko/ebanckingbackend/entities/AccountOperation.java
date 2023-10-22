@@ -21,6 +21,7 @@ public class AccountOperation {
 
     private Double amount;
 
+    @Enumerated(EnumType.STRING)
     private OperationType Type;
 
     @ManyToOne
