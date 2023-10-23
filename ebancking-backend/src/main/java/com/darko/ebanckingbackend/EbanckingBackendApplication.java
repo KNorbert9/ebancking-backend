@@ -6,9 +6,13 @@ import com.darko.ebanckingbackend.entities.Customer;
 import com.darko.ebanckingbackend.entities.SavingAccount;
 import com.darko.ebanckingbackend.enums.AccountStatus;
 import com.darko.ebanckingbackend.enums.OperationType;
+import com.darko.ebanckingbackend.exceptions.AccounBalanceNotInsuffisantException;
+import com.darko.ebanckingbackend.exceptions.BankAccountNotFoundException;
+import com.darko.ebanckingbackend.exceptions.CustomerNotFoundException;
 import com.darko.ebanckingbackend.repositories.AccountOperationRepo;
 import com.darko.ebanckingbackend.repositories.BankAccountRepo;
 import com.darko.ebanckingbackend.repositories.CustomerRepo;
+import com.darko.ebanckingbackend.services.BanckAccountService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,7 +29,45 @@ public class EbanckingBackendApplication {
 		SpringApplication.run(EbanckingBackendApplication.class, args);
 	}
 
-	@Bean
+
+	//@Bean
+	CommandLineRunner start(BanckAccountService banckAccountService){
+		return args -> {
+			Stream.of("Norbert", "Darko", "Juls").forEach(name-> {
+				Customer customer = new Customer();
+				customer.setName(name);
+				customer.setEmail(name + "@gmail.com");
+				banckAccountService.saveCustomer(customer);
+			});
+
+
+			banckAccountService.listCustomer().forEach(cust -> {
+				try {
+					banckAccountService.saveCurrentBankAccount(Math.random()*9000, 9000, cust.getId());
+					banckAccountService.saveSavingBankAccount(Math.random()*9000, 3.5, cust.getId());
+
+					banckAccountService.listBankAccount().forEach(account -> {
+						for (int i = 0; i < 10; i++){
+							try {
+								banckAccountService.credit(account.getId(), 1000+Math.random()*12000, "Credit ");
+								banckAccountService.debit(account.getId(), 1000+Math.random()*9000, "debit");
+							} catch (BankAccountNotFoundException | AccounBalanceNotInsuffisantException e) {
+								throw new RuntimeException(e);
+							}
+						}
+					});
+				} catch (CustomerNotFoundException e){
+					e.printStackTrace();
+				}
+			});
+
+
+		};
+
+
+	}
+
+	//@Bean
 	CommandLineRunner start(CustomerRepo customerRepo,
 							BankAccountRepo bankAccountRepo,
 							AccountOperationRepo accountOperationRepo){

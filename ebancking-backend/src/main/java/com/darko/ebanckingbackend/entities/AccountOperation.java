@@ -26,4 +26,11 @@ public class AccountOperation {
 
     @ManyToOne
     private BankAccount bankAccount;
+
+    private String description;
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = new Date();
+    }
 }

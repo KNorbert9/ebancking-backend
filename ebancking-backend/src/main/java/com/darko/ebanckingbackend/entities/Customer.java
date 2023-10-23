@@ -1,10 +1,12 @@
 package com.darko.ebanckingbackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Data @AllArgsConstructor @NoArgsConstructor @Entity
@@ -19,5 +21,13 @@ public class Customer {
     private String email;
 
     @OneToMany(mappedBy = "customer")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<BankAccount> bankAccounts;
+
+    private Date createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = new Date();
+    }
 }

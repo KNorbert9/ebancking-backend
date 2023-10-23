@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class BankAccount {
 
     private double balance;
 
-    private Date CreatedAt;
+    private Date createdAt;
 
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
@@ -26,6 +27,11 @@ public class BankAccount {
     @ManyToOne
     private Customer customer;
 
-    @OneToMany(mappedBy = "bankAccount")
+    @OneToMany(mappedBy = "bankAccount", fetch = FetchType.EAGER)
     private List<AccountOperation> accountOperations;
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = new Date();
+    }
 }
