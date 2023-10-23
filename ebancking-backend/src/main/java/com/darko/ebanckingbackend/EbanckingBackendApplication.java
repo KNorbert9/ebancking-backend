@@ -1,5 +1,6 @@
 package com.darko.ebanckingbackend;
 
+import com.darko.ebanckingbackend.dtos.CustomerDTO;
 import com.darko.ebanckingbackend.entities.AccountOperation;
 import com.darko.ebanckingbackend.entities.CurrentAccount;
 import com.darko.ebanckingbackend.entities.Customer;
@@ -34,7 +35,7 @@ public class EbanckingBackendApplication {
 	CommandLineRunner start(BanckAccountService banckAccountService){
 		return args -> {
 			Stream.of("Norbert", "Darko", "Juls").forEach(name-> {
-				Customer customer = new Customer();
+				CustomerDTO customer = new CustomerDTO();
 				customer.setName(name);
 				customer.setEmail(name + "@gmail.com");
 				banckAccountService.saveCustomer(customer);

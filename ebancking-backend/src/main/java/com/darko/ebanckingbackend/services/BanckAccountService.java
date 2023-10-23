@@ -1,6 +1,8 @@
 package com.darko.ebanckingbackend.services;
 
+import com.darko.ebanckingbackend.dtos.CurrentBankAccountDTO;
 import com.darko.ebanckingbackend.dtos.CustomerDTO;
+import com.darko.ebanckingbackend.dtos.SavingBankAccountDTO;
 import com.darko.ebanckingbackend.entities.BankAccount;
 import com.darko.ebanckingbackend.entities.Customer;
 import com.darko.ebanckingbackend.exceptions.AccounBalanceNotInsuffisantException;
@@ -11,11 +13,15 @@ import java.util.function.LongConsumer;
 
 public interface BanckAccountService {
 
-    Customer saveCustomer(Customer customer);
+    CustomerDTO saveCustomer(CustomerDTO customerDTO);
 
-    BankAccount saveCurrentBankAccount(double initialBalance, double overDraft, Long ConstumerId);
+    CustomerDTO updateCustomer(CustomerDTO customerDTO);
 
-    BankAccount saveSavingBankAccount(double initialBalance, double interestRate, Long ConstumerId);
+    void deleteCustomer(Long id);
+
+    CurrentBankAccountDTO saveCurrentBankAccount(double initialBalance, double overDraft, Long ConstumerId);
+
+    SavingBankAccountDTO saveSavingBankAccount(double initialBalance, double interestRate, Long ConstumerId);
 
     List<CustomerDTO> listCustomer();
 
@@ -28,4 +34,6 @@ public interface BanckAccountService {
     void transfert(String accountIdSource, String accountIdDestination, double amount) throws BankAccountNotFoundException, AccounBalanceNotInsuffisantException;
 
     List<BankAccount> listBankAccount() ;
+
+    CustomerDTO getCostomerDTOById(Long Id);
 }

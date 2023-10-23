@@ -1,6 +1,8 @@
 package com.darko.ebanckingbackend.servicesImplementation;
 
+import com.darko.ebanckingbackend.dtos.CurrentBankAccountDTO;
 import com.darko.ebanckingbackend.dtos.CustomerDTO;
+import com.darko.ebanckingbackend.dtos.SavingBankAccountDTO;
 import com.darko.ebanckingbackend.entities.*;
 import com.darko.ebanckingbackend.enums.AccountStatus;
 import com.darko.ebanckingbackend.enums.OperationType;
@@ -17,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,13 +39,28 @@ public class BanckAccountServiceImpl implements BanckAccountService {
 
 
     @Override
-    public Customer saveCustomer(Customer customer) {
+    public CustomerDTO saveCustomer(CustomerDTO customerDTO) {
         log.info("Création de nouveau client");
-        return customerRepo.save(customer);
+        Customer customer = dtoMapper.fromCustomerDTO(customerDTO);
+        Customer saveCustomer = customerRepo.save(customer);
+        return dtoMapper.fromCustomer(saveCustomer);
     }
 
     @Override
-    public BankAccount saveCurrentBankAccount(double initialBalance, double overDraft, Long CustumerId) {
+    public CustomerDTO updateCustomer(CustomerDTO customerDTO) {
+        log.info("Mise à jour de client");
+        Customer customer = dtoMapper.fromCustomerDTO(customerDTO);
+        Customer saveCustomer = customerRepo.save(customer);
+        return dtoMapper.fromCustomer(saveCustomer);
+    }
+
+    @Override
+    public void deleteCustomer(Long id) {
+        customerRepo.deleteById(id);
+    }
+
+    @Override
+    public CurrentBankAccountDTO saveCurrentBankAccount(double initialBalance, double overDraft, Long CustumerId) {
         Customer customer = customerRepo.findById(CustumerId).orElse(null);
 
         if (customer == null)
@@ -58,11 +74,14 @@ public class BanckAccountServiceImpl implements BanckAccountService {
         currentAccount.setStatus(AccountStatus.CREATED);
         currentAccount.setOverDraft(overDraft);
 
-        return bankAccountRepo.save(currentAccount);
+
+        CurrentAccount currentAccountSave = bankAccountRepo.save(currentAccount);
+
+        return dtoMapper.fromCurentBankAccount(currentAccountSave);
     }
 
     @Override
-    public BankAccount saveSavingBankAccount(double initialBalance, double interestRate, Long CustumerId) {
+    public SavingBankAccountDTO saveSavingBankAccount(double initialBalance, double interestRate, Long CustumerId) {
         Customer customer = customerRepo.findById(CustumerId).orElse(null);
 
         if (customer == null)
@@ -76,7 +95,10 @@ public class BanckAccountServiceImpl implements BanckAccountService {
         savingAccount.setStatus(AccountStatus.CREATED);
         savingAccount.setInterestRate(interestRate);
 
-        return bankAccountRepo.save(savingAccount);
+        SavingAccount savingAccountSave = bankAccountRepo.save(savingAccount);
+
+
+        return dtoMapper.fromSavingBankAccount(savingAccountSave);
     }
 
 
@@ -85,7 +107,7 @@ public class BanckAccountServiceImpl implements BanckAccountService {
         List<Customer> customers = customerRepo.findAll();
 
         List<CustomerDTO> customerDTOS;
-        customerDTOS = customers.stream().map(customer -> dtoMapper.FromCustomer(customer)).collect(Collectors.toList());
+        customerDTOS = customers.stream().map(customer -> dtoMapper.fromCustomer(customer)).collect(Collectors.toList());
         /*
         List<CustomerDTO> customerDTOS = new ArrayList<>();
         for (Customer customer:customers){
@@ -148,5 +170,12 @@ public class BanckAccountServiceImpl implements BanckAccountService {
     @Override
     public List<BankAccount> listBankAccount() {
         return bankAccountRepo.findAll();
+    }
+
+    @Override
+    public CustomerDTO getCostomerDTOById(Long id) throws CustomerNotFoundException {
+        Customer customer = customerRepo.findById(id).orElseThrow(()->new CustomerNotFoundException("Customer non trouvé"));
+
+        return dtoMapper.fromCustomer(customer);
     }
 }
