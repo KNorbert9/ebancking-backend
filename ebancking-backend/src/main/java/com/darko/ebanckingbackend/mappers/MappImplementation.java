@@ -1,8 +1,10 @@
 package com.darko.ebanckingbackend.mappers;
 
+import com.darko.ebanckingbackend.dtos.AccountOperationDTO;
 import com.darko.ebanckingbackend.dtos.CurrentBankAccountDTO;
 import com.darko.ebanckingbackend.dtos.CustomerDTO;
 import com.darko.ebanckingbackend.dtos.SavingBankAccountDTO;
+import com.darko.ebanckingbackend.entities.AccountOperation;
 import com.darko.ebanckingbackend.entities.CurrentAccount;
 import com.darko.ebanckingbackend.entities.Customer;
 import com.darko.ebanckingbackend.entities.SavingAccount;
@@ -32,6 +34,7 @@ public class MappImplementation {
 
         BeanUtils.copyProperties(savingAccount, savingBankAccountDTO);
         savingBankAccountDTO.setCustomerDTO(fromCustomer(savingAccount.getCustomer()));
+        savingBankAccountDTO.setType(savingAccount.getClass().getSimpleName());
         return savingBankAccountDTO;
     }
 
@@ -51,6 +54,7 @@ public class MappImplementation {
 
         BeanUtils.copyProperties(currentAccount, currentBankAccountDTO);
         currentBankAccountDTO.setCustomerDTO(fromCustomer(currentAccount.getCustomer()));
+        currentBankAccountDTO.setType(currentAccount.getClass().getSimpleName());
         return currentBankAccountDTO;
     }
 
@@ -63,5 +67,23 @@ public class MappImplementation {
         currentAccount.setCustomer(fromCustomerDTO(currentBankAccountDTO.getCustomerDTO()));
 
         return currentAccount;
+    }
+
+
+    public AccountOperation fromAccountOperationDTO(AccountOperationDTO accountOperationDTO){
+        AccountOperation accountOperation = new AccountOperation();
+
+        BeanUtils.copyProperties(accountOperationDTO, accountOperation);
+
+        return accountOperation;
+    }
+
+
+    public AccountOperationDTO fromAccountOperation(AccountOperation accountOperation){
+        AccountOperationDTO accountOperationDTO = new AccountOperationDTO();
+
+        BeanUtils.copyProperties(accountOperation, accountOperationDTO);
+
+        return accountOperationDTO;
     }
 }

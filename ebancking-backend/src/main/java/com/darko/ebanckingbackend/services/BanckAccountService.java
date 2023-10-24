@@ -1,8 +1,6 @@
 package com.darko.ebanckingbackend.services;
 
-import com.darko.ebanckingbackend.dtos.CurrentBankAccountDTO;
-import com.darko.ebanckingbackend.dtos.CustomerDTO;
-import com.darko.ebanckingbackend.dtos.SavingBankAccountDTO;
+import com.darko.ebanckingbackend.dtos.*;
 import com.darko.ebanckingbackend.entities.BankAccount;
 import com.darko.ebanckingbackend.entities.Customer;
 import com.darko.ebanckingbackend.exceptions.AccounBalanceNotInsuffisantException;
@@ -25,7 +23,7 @@ public interface BanckAccountService {
 
     List<CustomerDTO> listCustomer();
 
-    BankAccount getBankAccount(String accountId) throws BankAccountNotFoundException;
+    BankAccountDTO getBankAccount(String accountId) throws BankAccountNotFoundException;
 
     void debit(String accountId, double amount, String description) throws BankAccountNotFoundException, AccounBalanceNotInsuffisantException;
 
@@ -33,7 +31,11 @@ public interface BanckAccountService {
 
     void transfert(String accountIdSource, String accountIdDestination, double amount) throws BankAccountNotFoundException, AccounBalanceNotInsuffisantException;
 
-    List<BankAccount> listBankAccount() ;
+    List<BankAccountDTO> listBankAccount() ;
+
+    List<AccountOperationDTO> accountHistory(String id);
 
     CustomerDTO getCostomerDTOById(Long Id);
+
+    AccountHistoryDTO getAccountHistory(String accountId, int page, int size) throws BankAccountNotFoundException;
 }

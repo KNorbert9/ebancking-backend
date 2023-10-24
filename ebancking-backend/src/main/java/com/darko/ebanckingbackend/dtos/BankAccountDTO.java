@@ -13,21 +13,5 @@ import java.util.List;
 
 @Data
 public class BankAccountDTO {
-
-    private String id;
-
-    private double balance;
-
-    private Date createdAt;
-
-    private AccountStatus status;
-
-    private Customer customer;
-
-    private List<AccountOperation> accountOperations;
-
-    @PrePersist
-    public void prePersist() {
-        createdAt = new Date();
-    }
+    private String type;
 }

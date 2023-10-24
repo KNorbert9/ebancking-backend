@@ -1,10 +1,10 @@
 package com.darko.ebanckingbackend;
 
+import com.darko.ebanckingbackend.dtos.BankAccountDTO;
+import com.darko.ebanckingbackend.dtos.CurrentBankAccountDTO;
 import com.darko.ebanckingbackend.dtos.CustomerDTO;
-import com.darko.ebanckingbackend.entities.AccountOperation;
-import com.darko.ebanckingbackend.entities.CurrentAccount;
-import com.darko.ebanckingbackend.entities.Customer;
-import com.darko.ebanckingbackend.entities.SavingAccount;
+import com.darko.ebanckingbackend.dtos.SavingBankAccountDTO;
+import com.darko.ebanckingbackend.entities.*;
 import com.darko.ebanckingbackend.enums.AccountStatus;
 import com.darko.ebanckingbackend.enums.OperationType;
 import com.darko.ebanckingbackend.exceptions.AccounBalanceNotInsuffisantException;
@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -45,23 +46,33 @@ public class EbanckingBackendApplication {
 			banckAccountService.listCustomer().forEach(cust -> {
 				try {
 					banckAccountService.saveCurrentBankAccount(Math.random()*9000, 9000, cust.getId());
-					banckAccountService.saveSavingBankAccount(Math.random()*9000, 3.5, cust.getId());
+					banckAccountService.saveSavingBankAccount(Math.random()*12000, 3.5, cust.getId());
 
-					banckAccountService.listBankAccount().forEach(account -> {
-						for (int i = 0; i < 10; i++){
-							try {
-								banckAccountService.credit(account.getId(), 1000+Math.random()*12000, "Credit ");
-								banckAccountService.debit(account.getId(), 1000+Math.random()*9000, "debit");
-							} catch (BankAccountNotFoundException | AccounBalanceNotInsuffisantException e) {
-								throw new RuntimeException(e);
-							}
-						}
-					});
+
 				} catch (CustomerNotFoundException e){
 					e.printStackTrace();
 				}
 			});
 
+            List<BankAccountDTO> bankAccounts = banckAccountService.listBankAccount();
+
+            banckAccountService.listBankAccount().forEach(account -> {
+                for (int i = 0; i < 10; i++){
+                    try {
+                        String accountId;
+
+                        if (account instanceof SavingBankAccountDTO){
+                            accountId=((SavingBankAccountDTO) account).getId();
+                        }else {
+                            accountId= ((CurrentBankAccountDTO) account).getId();
+                        }
+                        banckAccountService.credit(accountId, 10000+Math.random()*12000, "Credit ");
+                        banckAccountService.debit(accountId, 1000+Math.random()*9000, "debit");
+                    } catch (BankAccountNotFoundException | AccounBalanceNotInsuffisantException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
 
 		};
 
